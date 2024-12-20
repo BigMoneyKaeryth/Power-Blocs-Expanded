@@ -1,0 +1,13 @@
+{
+    "game_custom_data": {
+        "multiplayer_synchronized": true
+    },
+    "id": "",
+    "name": "Power Blocs Expanded",
+    "picture": "thumbnail.png",
+    "relationships": [],
+    "short_description": "Reworks Power Bloc identities and Principles",
+    "supported_game_version": "1.8.*",
+    "tags": [],
+    "version": "1.0.1"
+}

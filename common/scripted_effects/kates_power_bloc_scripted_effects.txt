@@ -1,0 +1,179 @@
+﻿kates_power_bloc_revolution_effect = {
+	if = {
+		limit = {
+			is_diplomatic_play_type = dp_revolution
+			scope:target.power_bloc = {
+				modifier:power_bloc_members_auto_help_against_revolutions_bool = yes
+			}
+		}
+		save_scope_as = revolution_play
+		every_country = {
+			limit = {
+				power_bloc = scope:target.power_bloc
+			}
+			scope:revolution_play = {
+				add_target_backers = {
+					prev
+				}
+			}
+		}
+	}
+}
+
+holy_war_start_action = {
+	scope:initiator_country = {
+		set_variable = {
+			name = holy_war_target
+			value = scope:target_country
+		}
+	}
+	scope:target_country = {
+		trigger_event = {
+			id = holy_wars.1
+			popup = yes
+		}
+	}
+
+	every_country = {
+		limit = {
+			religion = scope:target_country.religion
+			AND = {
+				has_diplomatic_relevance = scope:target_country
+				has_diplomatic_relevance = scope:initiator_country
+			}
+			NOR = {
+				this = scope:target_country
+				is_subject_of = scope:initiator_country
+				has_diplomatic_pact = {
+					who = scope:initiator_country
+					type = alliance
+				}
+				has_diplomatic_pact = {
+					who = scope:initiator_country
+					type = defensive_pact
+				}
+				has_diplomatic_pact = {
+					who = scope:initiator_country
+					type = humiliation
+				}
+			}
+		}
+		trigger_event = {
+			id = holy_wars.2
+		}
+	}
+
+	every_country = {
+		limit = {
+			religion = scope:initiator_country.religion
+			AND = {
+				has_diplomatic_relevance = scope:target_country
+				has_diplomatic_relevance = scope:initiator_country
+			}
+			NOR = {
+				this = scope:initiator_country
+				is_subject_of = scope:target_country
+				has_diplomatic_pact = {
+					who = scope:target_country
+					type = alliance
+				}
+				has_diplomatic_pact = {
+					who = scope:target_country
+					type = defensive_pact
+				}
+				has_diplomatic_pact = {
+					who = scope:target_country
+					type = humiliation
+				}
+				has_truce_with = scope:target_country
+			}
+		}
+		trigger_event = {
+			id = holy_wars.3
+		}
+	}
+}
+
+kates_power_bloc_holy_war_enforced_effect = {
+	if = {
+		limit = {
+			var:holy_war_target = scope:target
+			scope:diplomatic_play = {
+				is_diplomatic_play_type = dp_holy_war
+				target = scope:target
+			}
+		}
+		scope:target = {
+			set_state_religion = root.religion
+			capital = {
+				convert_population = {
+					target = root.religion
+					value = 0.05
+				}
+			}
+			every_scope_state = {
+				limit = { is_capital = no }
+				convert_population = {
+					target = root.religion
+					value = 0.02
+				}				
+			}
+			state_religion_switch_effect = yes
+		}
+		remove_variable = holy_war_target
+	}
+	else_if = {
+		limit = {
+			scope:diplomatic_play = {
+				is_diplomatic_play_type = dp_holy_war
+			}
+			scope:target = {
+				has_variable = holy_war_target
+			}
+		}
+		scope:target = {
+			remove_variable = holy_war_target
+		}
+	}
+}
+
+kates_dynamic_modifier_update = {
+	remove_modifier = $modifier_name$
+	if = {
+		limit = {
+			modifier:$custom_modifier_type$ != 0
+		}
+		add_modifier = {
+			name = $modifier_name$
+			multiplier = $custom_multiplier$
+		}
+	}
+}
+
+kates_dynamic_modifier_handler = {
+	kates_dynamic_modifier_update = {
+		modifier_name = kates_influence_per_subject_modifier
+		custom_modifier_type = country_influence_per_subject_add
+		custom_multiplier = kates_influence_per_subject_multiplier
+	}
+	kates_dynamic_modifier_update = {
+		modifier_name = kates_minting_per_bloc_member_modifier
+		custom_modifier_type = country_minting_from_bloc_members_mult
+		custom_multiplier = kates_minting_per_bloc_member_multiplier
+	}
+	kates_dynamic_modifier_update = {
+		modifier_name = kates_training_rate_per_subject_modifier
+		custom_modifier_type = building_training_rate_per_subject_mult
+		custom_multiplier = kates_training_rate_per_subject_multiplier
+	}
+	kates_dynamic_modifier_update = {
+		modifier_name = kates_legitimacy_per_bloc_member_modifier
+		custom_modifier_type = country_legitimacy_per_power_bloc_member_add
+		custom_multiplier = kates_legitimacy_per_bloc_member_multiplier
+	}
+	kates_dynamic_modifier_update = {
+		modifier_name = kates_influence_per_bloc_member_modifier
+		custom_modifier_type = country_influence_from_bloc_members_add
+		custom_multiplier = kates_influence_per_bloc_member_multiplier
+	}
+}
